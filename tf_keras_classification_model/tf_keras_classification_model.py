@@ -71,6 +71,8 @@ history = model.fit(x_train, y_train, epochs=10, validation_data=(x_valid, y_val
 
 type(history)
 
+# 对数据集进行归一化
+
 def plot_learning_curves(history):
     pd.DataFrame(history)
     plt.grid(True)
