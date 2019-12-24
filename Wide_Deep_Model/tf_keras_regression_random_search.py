@@ -60,7 +60,7 @@ def build_model(hidden_layers = 1, layer_size = 30, learning_rate =3e-3):
     model = tf.keras.models.Sequential()
     model.add(tf.keras.layers.Dense(layer_size,
                                     activation='relu', input_shape=x_train.shape[1:]))
-    for _ in range(hidden_layers):
+    for _ in range(hidden_layers-1):
         model.add(tf.keras.layers.Dense(layer_size, activation= 'relu'))
     model.add(tf.keras.layers.Dense(1))
     optimizer = tf.keras.optimizers.SGD(learning_rate)
@@ -69,17 +69,37 @@ def build_model(hidden_layers = 1, layer_size = 30, learning_rate =3e-3):
 
 sklearn_model = tf.keras.wrappers.scikit_learn.KerasRegressor(build_model)
 callbacks = [tf.keras.callbacks.EarlyStopping(patience=5, min_delta=1e-3)]
-history = sklearn_model.fit(x_train_scaled, y_train,
+# 实现sklearn的随机超参数搜索
+from scipy.stats import reciprocal
+# reciprocal # = f(x)  = 1 /(x*log(b/a)) a <= x <= b
+param_distribution = {
+    "hidden_layers":[1, 2, 3, 4],
+    "layer_size":np.arange(1, 100),
+    "learning_rate": reciprocal(1e-4, 1e-2),
+}
+
+from sklearn.model_selection import RandomizedSearchCV
+random_search_cv = RandomizedSearchCV(sklearn_model, param_distribution, n_iter=10, n_jobs=1)
+random_search_cv.fit(x_train_scaled, y_train,
                   epochs = 100,
                   validation_data = (x_valid_scaled, y_valid),
                   callbacks = callbacks)
 
+# def plot_learning_curves(history):
+#     pd.DataFrame(history.history).plot(figsize=(8,5))
+#     plt.grid(True)
+#     plt.gca().set_ylim(0, 1)
+#     plt.show()
+#
+# plot_learning_curves(history)
 
-def plot_learning_curves(history):
-    pd.DataFrame(history.history).plot(figsize=(8,5))
-    plt.grid(True)
-    plt.gca().set_ylim(0, 1)
-    plt.show()
+print(random_search_cv.best_params_)
+print(random_search_cv.best_score_)
+print(random_search_cv.best_estimator_)
+print(random_search_cv.best_index_)
 
-plot_learning_curves(history)
+model = random_search_cv.best_estimator_.model
+model.evaluate(x_test_scaled, y_test)
+
+
 
