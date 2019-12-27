@@ -28,10 +28,10 @@ x_valid_scaled = scaler.transform(x_valid.astype(np.float32).reshape(-1, 1)).res
 x_test_scaled = scaler.transform(x_test.astype(np.float32).reshape(-1, 1)).reshape(-1, 28, 28)
 
 model = tf.keras.Sequential()
-model.add(tf.keras.layers.Flatten(input_shape=[28,28]))
-model.add(tf.keras.layers.Dense(300, activation="relu"))
-model.add(tf.keras.layers.Dense(100,activation="relu"))
-model.add(tf.keras.layers.Dense(10,activation="softmax"))
+model.add(tf.keras.layers.Flatten(input_shape=[28,28])) # output (28*28=784)
+model.add(tf.keras.layers.Dense(300, activation="relu")) # output (784 * 300 + 300 = 235500)
+model.add(tf.keras.layers.Dense(100,activation="relu")) # output ( 300 * 100 + 100 = 30100)
+model.add(tf.keras.layers.Dense(10,activation="softmax")) # output (10 * 100 + 10 = 1010)
 model.compile(loss="sparse_categorical_crossentropy", optimizer="sgd", metrics=["accuracy"])
 
 model.layers

@@ -36,3 +36,11 @@ print(v.numpy())
 v[1].assign([9,0])
 print(v[1])
 print(v.numpy())
+
+# test layer
+# layer = tf.keras.layers.Dense(10)
+layer = tf.keras.layers.Dense(100, input_shape=(None, 748))
+layer(tf.zeros([10, 748]))
+model = tf.keras.models.Sequential()
+model.add(layer)
+model.summary()
