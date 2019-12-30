@@ -62,7 +62,7 @@ class CustomizedDenseLayer(tf.keras.layers.Layer):
         super(CustomizedDenseLayer, self).__init__(**kwargs)
 
     def build(self, input_shape):
-        '''沟槽件所需要的参数'''
+        '''构建所需要的参数'''
         # x * w + b , x.input.shape = [None,a] x.output.shape = [None, b], [a, b]
         self.kernel = self.add_weight(name='kernel',
                                       shape=(input_shape[1], self.units),
