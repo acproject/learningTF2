@@ -50,6 +50,8 @@ with tf.GradientTape(persistent=True) as tape:
 
 dz = tape.gradient(z, [x1, x2])
 print(dz)
+# 因为使用了persistent=True，所以这里要手动增加del去释放资源
+# 如果没有persistent=True，tf将为我们自动释放资源，所以一旦调用了tape就会自动释放
 del tape
 
 x = tf.Variable(5.0)
