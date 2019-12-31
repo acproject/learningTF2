@@ -11,6 +11,8 @@ import time
 import tensorflow as tf
 
 from tensorflow import keras
+# import paddle.fluid
+# paddle.fluid.install_check.run_check()
 
 '''
 测试版本信息与模块名字
