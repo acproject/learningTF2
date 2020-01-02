@@ -19,6 +19,7 @@ print(tf.__version__)
 print(sys.version_info)
 for moudule in mpl, np , pd , sklearn, tf, keras:
     print(moudule.__name__, moudule.__version__)
+
 '''
 导入测试数据集,并拆分训练集、验证集和测试级
 '''
@@ -49,7 +50,6 @@ scaler = StandardScaler()
 x_train_scaled = scaler.fit_transform(x_train)
 x_valid_scaled = scaler.transform(x_valid)
 x_test_scaled = scaler.transform(x_test)
-
 output_dir = 'generate_csv'
 if not os.path.exists(output_dir):
     os.mkdir(output_dir)
@@ -57,8 +57,8 @@ if not os.path.exists(output_dir):
 def save_to_csv(output_dir, data, name_prefix, header=None, n_parts=10):
     path_format = os.path.join(output_dir, "{}_{:02d}.csv")
     filenames = []
-    for file_idx, row_indices in enumerate(np.array_split(np.arange(len(data), n_parts))):
-        part_csv =path_format(name_prefix, file_idx)
+    for file_idx, row_indices in enumerate(np.array_split(np.arange(len(data)), n_parts)):
+        part_csv = path_format.format(name_prefix, file_idx)
         filenames.append(part_csv)
         with open(part_csv, "wt", encoding="utf-8") as f:
             if header is not None:
@@ -69,9 +69,9 @@ def save_to_csv(output_dir, data, name_prefix, header=None, n_parts=10):
     return filenames
 
 
-train_data = np.c_(x_train_scaled, y_train)
-vaild_data = np.c_(x_valid_scaled, y_valid)
-test_data = np.c_(x_test_scaled, y_test)
+train_data = np.c_[x_train_scaled, y_train]
+vaild_data = np.c_[x_valid_scaled, y_valid]
+test_data = np.c_[x_test_scaled, y_test]
 header_cols = housing.feature_names + ["MidianHouseValue"]
 header_str = ",".join(header_cols)
 
@@ -79,9 +79,4 @@ train_filenames = save_to_csv(output_dir, train_data, "train", header_str, n_par
 vaild_filenames = save_to_csv(output_dir, vaild_data, "valid", header_str, n_parts=10)
 test_filenames = save_to_csv(output_dir, test_data, "test", header_str, n_parts=5)
 
-print("train filename: ")
-pprint(train_filenames)
-print("vaild filename: ")
-pprint(vaild_filenames)
-print("test filename: ")
-pprint(test_filenames)
+

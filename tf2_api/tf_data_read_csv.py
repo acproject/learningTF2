@@ -54,45 +54,70 @@ output_dir = 'generate_csv'
 if not os.path.exists(output_dir):
     os.mkdir(output_dir)
 
-def save_to_csv(output_dir, data, name_prefix, header=None, n_parts=10):
-    path_format = os.path.join(output_dir, "{}_{:02d}.csv")
-    filenames = []
-    for file_idx, row_indices in enumerate(np.array_split(np.arange(len(data), n_parts))):
-        part_csv =path_format(name_prefix, file_idx)
-        filenames.append(part_csv)
-        with open(part_csv, "wt", encoding="utf-8") as f:
-            if header is not None:
-                f.write(header + "\n")
-            for row_index in row_indices:
-                f.write(",".join([repr(col) for col in data[row_index]]))
-                f.write("\n")
-    return filenames
-
-
-train_data = np.c_(x_train_scaled, y_train)
-vaild_data = np.c_(x_valid_scaled, y_valid)
-test_data = np.c_(x_test_scaled, y_test)
-header_cols = housing.feature_names + ["MidianHouseValue"]
-header_str = ",".join(header_cols)
-
-train_filenames = save_to_csv(output_dir, train_data, "train", header_str, n_parts=20)
-vaild_filenames = save_to_csv(output_dir, vaild_data, "valid", header_str, n_parts=10)
-test_filenames = save_to_csv(output_dir, test_data, "test", header_str, n_parts=5)
-
 # read csv
 # 1. get filename -> dataset
 # 2. read file -> dataset -> datasets -> merge
 # 3. pares csv
-filename_dataset = tf.data.Dataset.list_files(train_filenames)
-for filename in filename_dataset:
-    print(filename)
-n_readers = 5
-dataset = filename_dataset.interleave(
-    lambda filename: tf.data.TextLineDataset(filename).skip(1),
-    cycle_length = n_readers
-)
-for line in dataset.take(15):
-    print(line.numpy())
+# filename_dataset = tf.data.Dataset.list_files(train_filenames)
+# for filename in filename_dataset:
+#     print(filename)
+# n_readers = 5
+# dataset = filename_dataset.interleave(
+#     lambda filename: tf.data.TextLineDataset(filename).skip(1),
+#     cycle_length = n_readers
+# )
+# for line in dataset.take(15):
+#     print(line.numpy())
 
 # tf.io.decode_csv(str, record_defaults)
+sample_str = '1,2,3,4,5'
+record_defaults = [tf.constant(0, dtype=tf.int32),
+                   0,
+                   np.nan,
+                   "hello",
+                   tf.constant([])
+                   ]
+parsed_fields = tf.io.decode_csv(sample_str,record_defaults)
+print(parsed_fields)
+
+def parse_csv_line(line, n_fields=9):
+    defs = [tf.constant(np.nan)] * n_fields
+    parsed_fields = tf.io.decode_csv(line, record_defaults=defs)
+    x = tf.stack(parsed_fields[0:-1])
+    y = tf.stack(parsed_fields[-1:])
+    return x, y
+
+def csv_reader_dataset(filenames, n_readers=5,
+                       batch_size=32,n_parsed_thread=5, shuffle_buffer_size=1024):
+    dataset = tf.data.Dataset.list_files(filenames)
+    dataset = dataset.repeat()
+    dataset = dataset.interleave(
+        lambda filename: tf.data.TextLineDataset(filename).skip(1),
+        cycle_length=n_readers
+    )
+    dataset.shuffle(shuffle_buffer_size)
+    dataset = dataset.map(parse_csv_line, num_parallel_calls=n_parsed_thread)
+    dataset = dataset.batch(batch_size)
+    return dataset
+
+model = tf.keras.models.Sequential([
+    tf.keras.layers.Dense(30, activation='relu', input_shape=8),
+    tf.keras.layers.Dense(1)
+])
+model.summary()
+model.compile(loss='mse', optimizer='sgd')
+callbacks = [tf.keras.callbacks.EarlyStopping(patience=5, min_delta=1e-2)]
+batch_size = 32
+train_set = csv_reader_dataset(filenames="train")
+valid_set = csv_reader_dataset(filenames="valid")
+test_set = csv_reader_dataset(filenames="test")
+history = model.fit(train_set,
+                    validation_data=valid_set,
+                    steps_per_epoch=11160 // batch_size,
+                    validation_steps=3870 // batch_size,
+                    epochs=100,
+                    callbacks=callbacks)
+
+model.evaluate(test_set, steps=5160 // batch_size)
+
 
