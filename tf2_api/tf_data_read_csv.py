@@ -120,4 +120,9 @@ history = model.fit(train_set,
 
 model.evaluate(test_set, steps=5160 // batch_size)
 
+class test1:
+    pass
+class test2:
+    pass
+
 
