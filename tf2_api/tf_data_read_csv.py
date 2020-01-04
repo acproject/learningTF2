@@ -101,7 +101,7 @@ def csv_reader_dataset(filenames, n_readers=5,
     return dataset
 
 # model = tf.keras.models.Sequential([
-#     tf.keras.layers.Dense(30, activation='relu', input_shape=8),
+#     tf.keras.layers.Dense(30, activation='relu', input_shape=[8]),
 #     tf.keras.layers.Dense(1)
 # ])
 # model.summary()
@@ -119,5 +119,5 @@ def csv_reader_dataset(filenames, n_readers=5,
 #                     callbacks=callbacks)
 #
 # model.evaluate(test_set, steps=5160 // batch_size)
-#
+
 
