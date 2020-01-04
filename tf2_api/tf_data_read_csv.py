@@ -87,6 +87,17 @@ def parse_csv_line(line, n_fields=9):
     y = tf.stack(parsed_fields[-1:])
     return x, y
 
+source_dir = './generate_csv/'
+def get_filename_by_perfix(source_dir, prefix_name):
+    all_files = os.listdir(source_dir)
+    results = []
+    for filename in all_files:
+        if filename.startswith(prefix_name):
+            results.append(os.path.join(source_dir, filename))
+    return results
+train_csv_filenames = get_filename_by_perfix(source_dir, "train")
+valid_csv_filenames = get_filename_by_perfix(source_dir, "valid")
+test_csv_filenames = get_filename_by_perfix(source_dir, "test")
 def csv_reader_dataset(filenames, n_readers=5,
                        batch_size=32,n_parsed_thread=5, shuffle_buffer_size=1024):
     dataset = tf.data.Dataset.list_files(filenames)
@@ -100,24 +111,24 @@ def csv_reader_dataset(filenames, n_readers=5,
     dataset = dataset.batch(batch_size)
     return dataset
 
-# model = tf.keras.models.Sequential([
-#     tf.keras.layers.Dense(30, activation='relu', input_shape=[8]),
-#     tf.keras.layers.Dense(1)
-# ])
-# model.summary()
-# model.compile(loss='mse', optimizer='sgd')
-# callbacks = [tf.keras.callbacks.EarlyStopping(patience=5, min_delta=1e-2)]
-# batch_size = 32
-# train_set = csv_reader_dataset(filenames="train")
-# valid_set = csv_reader_dataset(filenames="valid")
-# test_set = csv_reader_dataset(filenames="test")
-# history = model.fit(train_set,
-#                     validation_data=valid_set,
-#                     steps_per_epoch=11160 // batch_size,
-#                     validation_steps=3870 // batch_size,
-#                     epochs=100,
-#                     callbacks=callbacks)
-#
-# model.evaluate(test_set, steps=5160 // batch_size)
+model = tf.keras.models.Sequential([
+    tf.keras.layers.Dense(30, activation='relu', input_shape=[8]),
+    tf.keras.layers.Dense(1)
+])
+model.summary()
+model.compile(loss='mse', optimizer='sgd')
+callbacks = [tf.keras.callbacks.EarlyStopping(patience=5, min_delta=1e-2)]
+batch_size = 32
+train_set = csv_reader_dataset(filenames=train_csv_filenames)
+valid_set = csv_reader_dataset(filenames=valid_csv_filenames)
+test_set = csv_reader_dataset(filenames=test_csv_filenames)
+history = model.fit(train_set,
+                    validation_data=valid_set,
+                    steps_per_epoch=11160 // batch_size,
+                    validation_steps=3870 // batch_size,
+                    epochs=100,
+                    callbacks=callbacks)
+
+model.evaluate(test_set, steps=5160 // batch_size)
 
 
