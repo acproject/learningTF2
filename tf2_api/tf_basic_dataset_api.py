@@ -17,7 +17,7 @@ from tensorflow import keras
 '''
 print(tf.__version__)
 print(sys.version_info)
-for moudule in mpl, np , pd , sklearn, tf, keras:
+for moudule in mpl, np, pd, sklearn, tf, keras:
     print(moudule.__name__, moudule.__version__)
 
 dataset = tf.data.Dataset.from_tensor_slices(np.arange(10))
@@ -44,12 +44,12 @@ dataset2 = dataset.interleave(
 for item in dataset2:
     print(item)
 
-x = np.array([[1,2], [3, 4], [5, 6]])
+x = np.array([[1, 2], [3, 4], [5, 6]])
 y = np.array(['cat', 'dog', 'fox'])
 dataset3 = tf.data.Dataset.from_tensor_slices((x, y))
 print(dataset3)
 
-for item_x , item_y in dataset3:
+for item_x, item_y in dataset3:
     print(item_x.numpy(), item_y.numpy())
 
 dataset4  = tf.data.Dataset.from_tensor_slices({"feature": x, "lable": y})

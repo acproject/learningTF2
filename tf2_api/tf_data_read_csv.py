@@ -77,7 +77,7 @@ record_defaults = [tf.constant(0, dtype=tf.int32),
                    "hello",
                    tf.constant([])
                    ]
-parsed_fields = tf.io.decode_csv(sample_str,record_defaults)
+parsed_fields = tf.io.decode_csv(sample_str, record_defaults)
 print(parsed_fields)
 
 def parse_csv_line(line, n_fields=9):
@@ -100,29 +100,24 @@ def csv_reader_dataset(filenames, n_readers=5,
     dataset = dataset.batch(batch_size)
     return dataset
 
-model = tf.keras.models.Sequential([
-    tf.keras.layers.Dense(30, activation='relu', input_shape=8),
-    tf.keras.layers.Dense(1)
-])
-model.summary()
-model.compile(loss='mse', optimizer='sgd')
-callbacks = [tf.keras.callbacks.EarlyStopping(patience=5, min_delta=1e-2)]
-batch_size = 32
-train_set = csv_reader_dataset(filenames="train")
-valid_set = csv_reader_dataset(filenames="valid")
-test_set = csv_reader_dataset(filenames="test")
-history = model.fit(train_set,
-                    validation_data=valid_set,
-                    steps_per_epoch=11160 // batch_size,
-                    validation_steps=3870 // batch_size,
-                    epochs=100,
-                    callbacks=callbacks)
-
-model.evaluate(test_set, steps=5160 // batch_size)
-
-class test1:
-    pass
-class test2:
-    pass
-
+# model = tf.keras.models.Sequential([
+#     tf.keras.layers.Dense(30, activation='relu', input_shape=8),
+#     tf.keras.layers.Dense(1)
+# ])
+# model.summary()
+# model.compile(loss='mse', optimizer='sgd')
+# callbacks = [tf.keras.callbacks.EarlyStopping(patience=5, min_delta=1e-2)]
+# batch_size = 32
+# train_set = csv_reader_dataset(filenames="train")
+# valid_set = csv_reader_dataset(filenames="valid")
+# test_set = csv_reader_dataset(filenames="test")
+# history = model.fit(train_set,
+#                     validation_data=valid_set,
+#                     steps_per_epoch=11160 // batch_size,
+#                     validation_steps=3870 // batch_size,
+#                     epochs=100,
+#                     callbacks=callbacks)
+#
+# model.evaluate(test_set, steps=5160 // batch_size)
+#
 
