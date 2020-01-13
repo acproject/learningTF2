@@ -17,13 +17,13 @@ from tensorflow import keras
 '''
 print(tf.__version__)
 print(sys.version_info)
-for moudule in mpl, np , pd , sklearn, tf, keras:
+for moudule in mpl, np, pd, sklearn, tf, keras:
     print(moudule.__name__, moudule.__version__)
 
 imdb = tf.keras.datasets.imdb
 vocab_size = 10000
-index_from =3
-(train_data, train_labels),(test_data, test_labels) = imdb.load_data(num_words=vocab_size, index_from=index_from)
+index_from = 3
+(train_data, train_labels), (test_data, test_labels) = imdb.load_data(num_words=vocab_size, index_from=index_from)
 print(train_data[0], train_labels[0])
 print(train_data.shape, train_labels.shape)
 print(len(train_data[0]), len(train_data[1]))
@@ -34,7 +34,7 @@ word_index = imdb.get_word_index()
 print(len(word_index))
 print(word_index)
 
-word_index = {k:(v+3) for k, v in word_index.items()}
+word_index = {k: (v + 3) for k, v in word_index.items()}
 
 word_index['<PAD>'] = 0
 word_index['<START>'] = 1
@@ -43,8 +43,10 @@ word_index['<END>'] = 3
 
 reverse_word_index = dict([(value, key) for key, value in word_index.items()])
 
+
 def decode_review(text_ids):
     return ' '.join([reverse_word_index.get(word_id, '<UNK>') for word_id in text_ids])
+
 
 print(decode_review(train_data[0]))
 
@@ -53,14 +55,14 @@ max_length = 500
 train_data = tf.keras.preprocessing.sequence.pad_sequences(
     train_data,
     value=word_index['<PAD>'],
-    padding='post',    # pre | post
+    padding='post',  # pre | post
     maxlen=max_length
 )
 
 test_data = tf.keras.preprocessing.sequence.pad_sequences(
     train_data,
     value=word_index['<PAD>'],
-    padding='post',    # pre | post
+    padding='post',  # pre | post
     maxlen=max_length
 )
 
@@ -71,12 +73,12 @@ batch_size = 128
 
 model = tf.keras.models.Sequential([
     # 1. define matrix : [vocab_size , embedding_dim]
-    # 2. [1,2,3...]. max_length * embdding_dim
-    # 3 .batch_size * max_length * embdding_dim
-    tf.keras.layers.Embedding(vocab_size, embedding_dim, input_length= max_length),
-    # <input> bactch_size * max_lenght * enbedding_dim ->  batch_size * embedding_dim
+    # 2. [1,2,3...]. max_length * embedding_dim
+    # 3 .batch_size * max_length * embedding_dim
+    tf.keras.layers.Embedding(vocab_size, embedding_dim, input_length=max_length),
+    # <input> batch_size * max_lenght * embedding_dim ->  batch_size * embedding_dim
     tf.keras.layers.GlobalAveragePooling1D(),
-    tf.keras.layers.Dense(64,activation='relu'),
+    tf.keras.layers.Dense(64, activation='relu'),
     tf.keras.layers.Dense(1, activation='sigmoid'),
 ])
 
@@ -86,6 +88,7 @@ model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy']
 history = model.fit(train_data, train_labels, epochs=30, batch_size=batch_size,
                     validation_split=0.2)
 
+
 def plot_learning_curves(histroy, label, epochs, min_value, max_value):
     data = {}
     data[label] = history.history[label]
@@ -94,6 +97,7 @@ def plot_learning_curves(histroy, label, epochs, min_value, max_value):
     plt.grid(True)
     plt.axis([0, epochs, min_value, max_value])
     plt.show()
+
 
 plot_learning_curves(history, 'accuracy', 30, 0, 1)
 plot_learning_curves(history, 'loss', 30, 0, 1)
