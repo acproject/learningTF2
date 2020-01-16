@@ -135,6 +135,11 @@ def generate_text(model, start_str, num_generate = 1000):
     text_generated = []
     model.reset_states()
 
+    # temperature > 1, random
+    # temperature < 1, greedy
+    temperature = 0.5
+
+
     for _ in range(num_generate):
         # 1. model inference -> predictions
         # 2. sample -> ch -> text_generated[]
@@ -142,6 +147,12 @@ def generate_text(model, start_str, num_generate = 1000):
 
         # predictions : [batch_size, input_eval_len, vocab_size]
         predictions = model(input_eval)
+        '''
+        predictions : logits --> softmax -> prob(概率分布)
+        softmax: eg: x =[4, 2] e^4/(e^4+e^2) =0.88, e^2/(e^4+e^2)=0.12
+                 if eg: / 2 : x =[2,1] e^2/(e^2+e^1)=0.73, e/(e^2+e) = 0.27
+        '''
+        predictions = predictions / temperature
         # predictions : [input_eval_len, vocab_size]
         predictions = tf.squeeze(predictions, 0)
         # prediction_id : [input_eval_len , 1]
