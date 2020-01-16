@@ -83,7 +83,7 @@ model = tf.keras.models.Sequential([
     # 3 .batch_size * max_length * embedding_dim
     tf.keras.layers.Embedding(vocab_size, embedding_dim, input_length=max_length),
     # <input> batch_size * max_lenght * embedding_dim ->  batch_size * embedding_dim
-    tf.keras.layers.LSTM(units= 64, return_sequences= False),
+    tf.keras.layers.LSTM(units=64, return_sequences=False),
     tf.keras.layers.Dense(64, activation='relu'),
     tf.keras.layers.Dense(1, activation='sigmoid'),
 ])

@@ -74,7 +74,7 @@ rnn_units = 1024
 def build_mode(vovab_size, embedding_dim, rnn_units, batch_size):
     model = tf.keras.models.Sequential([
         tf.keras.layers.Embedding(vovab_size, embedding_dim, batch_input_shape=[batch_size, None]),
-        tf.keras.layers.LSTM(units=rnn_units, return_sequences=True),
+        tf.keras.layers.LSTM(units=rnn_units, return_sequences=True, stateful=True, recurrent_initializer='glorot_uniform'),
         tf.keras.layers.Dense(vovab_size)
     ])
     return model;
