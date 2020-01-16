@@ -19,6 +19,12 @@ print(tf.__version__)
 print(sys.version_info)
 for moudule in mpl, np, pd, sklearn, tf, keras:
     print(moudule.__name__, moudule.__version__)
+# Solve 'Could not create cudnn handle: CUDNN_STATUS_INTERNAL_ERROR'
+from tensorflow.compat.v1 import ConfigProto
+from tensorflow.compat.v1 import InteractiveSession
+config = ConfigProto()
+config.gpu_options.allow_growth = True
+session = InteractiveSession(config=config)
 
 # 为什么需要LSTM
 # 门限机制

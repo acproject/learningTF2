@@ -20,6 +20,13 @@ print(sys.version_info)
 for moudule in mpl, np, pd, sklearn, tf, keras:
     print(moudule.__name__, moudule.__version__)
 
+# Solve 'Could not create cudnn handle: CUDNN_STATUS_INTERNAL_ERROR'
+from tensorflow.compat.v1 import ConfigProto
+from tensorflow.compat.v1 import InteractiveSession
+config = ConfigProto()
+config.gpu_options.allow_growth = True
+session = InteractiveSession(config=config)
+
 imdb = tf.keras.datasets.imdb
 vocab_size = 10000
 index_from = 3
@@ -88,7 +95,7 @@ model = tf.keras.models.Sequential([
 model.summary()
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
-history = model.fit(train_data, train_labels, epochs=30, batch_size=batch_size,
+history = model.fit(train_data, train_labels, epochs=15, batch_size=batch_size,
                     validation_split=0.2)
 
 
