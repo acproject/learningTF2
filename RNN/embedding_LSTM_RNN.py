@@ -91,7 +91,7 @@ model = tf.keras.models.Sequential([
 model.summary()
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
-history = model.fit(train_data, train_labels, epochs=30, batch_size=batch_size,
+history = model.fit(train_data, train_labels, epochs=15, batch_size=batch_size,
                     validation_split=0.2)
 
 
